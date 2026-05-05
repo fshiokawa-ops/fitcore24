@@ -270,6 +270,32 @@ const MACHINE_EQUIPS=[
 
 /* ─── CACHE ─── */
 const cache={};
+const transCache={};
+
+/* ─── 翻訳 ─── */
+async function translateToJa(text){
+  if(!text||text.length<3)return text;
+  if(transCache[text])return transCache[text];
+  try{
+    const url=`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ja&dt=t&q=${encodeURIComponent(text)}`;
+    const r=await fetch(url);
+    const d=await r.json();
+    const result=d[0].map(x=>x[0]).join('');
+    transCache[text]=result;
+    return result;
+  }catch{return text;}
+}
+
+async function translateExercises(exercises){
+  const BATCH=8;
+  for(let i=0;i<exercises.length;i+=BATCH){
+    await Promise.all(exercises.slice(i,i+BATCH).map(async ex=>{
+      const raw=strip(tr(ex).description||'').slice(0,200);
+      if(raw)ex._jaDesc=await translateToJa(raw);
+    }));
+  }
+  return exercises;
+}
 
 /* ─── API ─── */
 async function fetchEx(params={}){
@@ -281,17 +307,22 @@ async function fetchEx(params={}){
     const r=await fetch(url);
     if(!r.ok)throw new Error();
     const d=await r.json();
-    cache[key]=d.results||[];
+    const results=d.results||[];
+    await translateExercises(results);
+    cache[key]=results;
     return cache[key];
   }catch{return[];}
 }
 
 /* ─── HELPERS ─── */
 function strip(h){const d=document.createElement('div');d.innerHTML=h;return d.textContent||'';}
-function short(s,n=100){s=strip(s);return s.length>n?s.slice(0,n)+'…':s;}
+function short(s,n=110){return s.length>n?s.slice(0,n)+'…':s;}
 function tr(ex){return ex.translations?.find(t=>t.language===2)||{};}
 function exName(ex){return tr(ex).name||'名称不明';}
-function exDesc(ex){return short(tr(ex).description||'');}
+function exDesc(ex){
+  const desc=ex._jaDesc||strip(tr(ex).description||'');
+  return short(desc);
+}
 function exMuscles(ex){
   return[...(ex.muscles||[]),...(ex.muscles_secondary||[])]
     .map(m=>muscleMap[m.id]||m.name_en).filter(Boolean).slice(0,3);
