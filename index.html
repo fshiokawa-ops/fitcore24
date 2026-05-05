@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitCore24 - 筋トレ・ストレッチガイド</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --orange: #FF6B00;
+      --dark: #0a0a0a;
+      --dark2: #111111;
+      --dark3: #1a1a1a;
+      --gray: #2a2a2a;
+      --gray2: #3a3a3a;
+      --text: #ffffff;
+      --muted: #888888;
+    }
+    body { background: var(--dark); color: var(--text); font-family: 'Helvetica Neue', Arial, sans-serif; min-height: 100vh; }
+
+    /* HEADER */
+    header {
+      background: var(--dark2);
+      border-bottom: 2px solid var(--orange);
+      padding: 0 2rem;
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between; height: 64px;
+    }
+    .logo { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; }
+    .logo span { color: var(--orange); }
+    .tagline { color: var(--muted); font-size: 0.8rem; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--dark2) 0%, var(--dark3) 100%);
+      padding: 3.5rem 2rem 2.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--gray);
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(ellipse at center, rgba(255,107,0,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero h1 { font-size: 2.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 0.75rem; line-height: 1.1; }
+    .hero h1 span { color: var(--orange); }
+    .hero p { color: var(--muted); font-size: 1rem; max-width: 500px; margin: 0 auto 2rem; line-height: 1.7; }
+    .search-wrap { max-width: 480px; margin: 0 auto; position: relative; }
+    .search-wrap input {
+      width: 100%; background: var(--gray); border: 1px solid var(--gray2);
+      color: var(--text); padding: 0.9rem 3rem 0.9rem 1.25rem;
+      border-radius: 3px; font-size: 0.95rem; outline: none; transition: border-color 0.2s;
+    }
+    .search-wrap input:focus { border-color: var(--orange); }
+    .search-wrap input::placeholder { color: var(--muted); }
+    .search-icon { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted); }
+
+    /* MAIN */
+    main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+    /* FILTERS */
+    .filter-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 0.75rem; }
+    .filter-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .filter-tab {
+      background: var(--gray); border: 1px solid var(--gray2); color: var(--muted);
+      padding: 0.45rem 1.1rem; border-radius: 2px; cursor: pointer;
+      font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+    .filter-tab:hover { border-color: var(--orange); color: var(--orange); }
+    .filter-tab.active { background: var(--orange); border-color: var(--orange); color: #fff; }
+
+    /* SECTION HEADER */
+    .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .section-header h2 { font-size: 1.3rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+    .section-line { flex: 1; height: 1px; background: var(--gray); }
+    .section-count { color: var(--muted); font-size: 0.8rem; white-space: nowrap; }
+
+    /* GRID */
+    .exercise-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.25rem; margin-bottom: 3rem; }
+
+    /* CARD */
+    .exercise-card {
+      background: var(--dark3); border: 1px solid var(--gray);
+      border-radius: 3px; overflow: hidden;
+      transition: all 0.2s; cursor: pointer;
+    }
+    .exercise-card:hover { border-color: var(--orange); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(255,107,0,0.1); }
+    .card-top { background: var(--gray); padding: 0.75rem 1.1rem; display: flex; align-items: center; justify-content: space-between; }
+    .card-category { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--orange); font-weight: 800; }
+    .card-equipment { font-size: 0.7rem; color: var(--muted); background: var(--dark3); padding: 0.15rem 0.5rem; border-radius: 2px; }
+    .card-body { padding: 1.1rem; }
+    .card-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .card-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.6; margin-bottom: 0.9rem; }
+    .card-muscles { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .muscle-tag {
+      background: rgba(255,107,0,0.12); border: 1px solid rgba(255,107,0,0.3);
+      color: var(--orange); padding: 0.15rem 0.5rem; border-radius: 2px;
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    }
+
+    /* LOADING / EMPTY */
+    .loading { text-align: center; padding: 4rem; color: var(--muted); }
+    .spinner {
+      width: 36px; height: 36px; border: 3px solid var(--gray); border-top-color: var(--orange);
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state { text-align: center; padding: 4rem; color: var(--muted); }
+    .empty-state p { margin-top: 0.5rem; font-size: 0.9rem; }
+
+    /* FOOTER */
+    footer { background: var(--dark2); border-top: 1px solid var(--gray); padding: 2rem; text-align: center; color: var(--muted); font-size: 0.8rem; }
+    footer span { color: var(--orange); }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.8rem; }
+      .tagline { display: none; }
+      .exercise-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">FIT<span>CORE</span>24</div>
+  <div class="tagline">筋トレ・ストレッチ完全ガイド</div>
+</header>
+
+<section class="hero">
+  <h1>YOUR BODY.<br><span>YOUR RULES.</span></h1>
+  <p>マシンの使い方からストレッチまで。<br>目的別に最適なエクササイズを見つけよう。</p>
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="エクササイズを検索...">
+    <span class="search-icon">🔍</span>
+  </div>
+</section>
+
+<main>
+  <div class="filter-label">部位・目的で絞り込む</div>
+  <div class="filter-tabs">
+    <button class="filter-tab active" data-category="all">すべて</button>
+    <button class="filter-tab" data-category="10">腹筋・コア</button>
+    <button class="filter-tab" data-category="8">腕</button>
+    <button class="filter-tab" data-category="12">背中</button>
+    <button class="filter-tab" data-category="11">胸</button>
+    <button class="filter-tab" data-category="9">脚</button>
+    <button class="filter-tab" data-category="13">肩</button>
+    <button class="filter-tab" data-category="14">ふくらはぎ</button>
+  </div>
+
+  <div class="section-header">
+    <h2 id="sectionTitle">全エクササイズ</h2>
+    <div class="section-line"></div>
+    <div class="section-count" id="countLabel">読み込み中...</div>
+  </div>
+
+  <div id="exerciseContainer">
+    <div class="loading"><div class="spinner"></div>データを取得中...</div>
+  </div>
+</main>
+
+<footer>
+  <p>Powered by <span>FITCORE24</span> &nbsp;·&nbsp; データ提供: Wger Workout Manager</p>
+</footer>
+
+<script>
+  const BASE = 'https://wger.de/api/v2';
+
+  const CATEGORIES = {
+    'all': 'すべて', '10': '腹筋・コア', '8': '腕',
+    '12': '背中', '14': 'ふくらはぎ', '11': '胸', '9': '脚', '13': '肩'
+  };
+
+  const MUSCLES = {
+    1:'上腕二頭筋', 2:'前鋸筋', 3:'上腕筋', 4:'大胸筋', 5:'上腕三頭筋',
+    6:'ふくらはぎ', 7:'広背筋', 8:'大臀筋', 9:'内転筋', 10:'腹直筋',
+    11:'大腿四頭筋', 12:'ハムストリングス', 13:'三角筋（前部）', 14:'三角筋（後部）', 15:'ヒラメ筋'
+  };
+
+  const EQUIPMENT = {
+    1:'バーベル', 2:'自重', 3:'ダンベル', 4:'マット',
+    5:'懸垂バー', 6:'ベンチ', 7:'ケトルベル', 8:'なし', 9:'マシン', 10:'EZバー', 11:'ケーブル'
+  };
+
+  let allExercises = [];
+  let currentCategory = 'all';
+  let searchQuery = '';
+
+  function strip(html) {
+    const d = document.createElement('div');
+    d.innerHTML = html;
+    return d.textContent || d.innerText || '';
+  }
+
+  async function fetchExercises(category) {
+    let url = `${BASE}/exerciseinfo/?format=json&language=2&limit=100`;
+    if (category && category !== 'all') url += `&category=${category}`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      return data.results || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function render(exercises) {
+    const container = document.getElementById('exerciseContainer');
+    let list = exercises;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      list = exercises.filter(ex => {
+        const t = ex.translations?.find(t => t.language === 2);
+        return (t?.name || '').toLowerCase().includes(q);
+      });
+    }
+    document.getElementById('countLabel').textContent = `${list.length}件`;
+    if (!list.length) {
+      container.innerHTML = `<div class="empty-state"><div style="font-size:2rem">💪</div><p>該当するエクササイズが見つかりませんでした</p></div>`;
+      return;
+    }
+    const grid = document.createElement('div');
+    grid.className = 'exercise-grid';
+    list.forEach(ex => {
+      const tr = ex.translations?.find(t => t.language === 2);
+      const name = tr?.name || '名称不明';
+      const raw = strip(tr?.description || '');
+      const desc = raw.length > 110 ? raw.slice(0, 110) + '…' : raw;
+      const muscles = [...(ex.muscles || []), ...(ex.muscles_secondary || [])]
+        .map(m => MUSCLES[m.id] || m.name_en).filter(Boolean).slice(0, 3);
+      const equip = (ex.equipment || []).map(e => EQUIPMENT[e.id] || e.name).filter(Boolean)[0] || '器具なし';
+      const cat = CATEGORIES[String(ex.category?.id)] || 'エクササイズ';
+
+      const card = document.createElement('div');
+      card.className = 'exercise-card';
+      card.innerHTML = `
+        <div class="card-top">
+          <span class="card-category">${cat}</span>
+          <span class="card-equipment">${equip}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-name">${name}</div>
+          ${desc ? `<div class="card-desc">${desc}</div>` : ''}
+          ${muscles.length ? `<div class="card-muscles">${muscles.map(m=>`<span class="muscle-tag">${m}</span>`).join('')}</div>` : ''}
+        </div>`;
+      grid.appendChild(card);
+    });
+    container.innerHTML = '';
+    container.appendChild(grid);
+  }
+
+  async function load(category) {
+    currentCategory = category;
+    document.getElementById('exerciseContainer').innerHTML = `<div class="loading"><div class="spinner"></div>データを取得中...</div>`;
+    document.getElementById('sectionTitle').textContent = CATEGORIES[category] || 'エクササイズ';
+    document.getElementById('countLabel').textContent = '読み込み中...';
+    allExercises = await fetchExercises(category);
+    render(allExercises);
+  }
+
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      load(tab.dataset.category);
+    });
+  });
+
+  document.getElementById('searchInput').addEventListener('input', e => {
+    searchQuery = e.target.value;
+    render(allExercises);
+  });
+
+  load('all');
+</script>
+</body>
+</html>
