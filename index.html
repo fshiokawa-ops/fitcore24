@@ -227,11 +227,23 @@
 <script>
 /* ─── DATA MAPS ─── */
 const CATS={10:'腹筋・コア',8:'腕',12:'背中',14:'ふくらはぎ',11:'胸',9:'脚',13:'肩'};
-// Wger API の正式な筋肉ID対応表
+// Wger API の正式な筋肉ID対応表（API実測値で確認済み）
 const MUSCLES={
-  1:'上腕二頭筋', 2:'三角筋(前部)', 3:'前鋸筋', 4:'大胸筋', 5:'上腕三頭筋',
-  6:'ハムストリングス', 7:'ふくらはぎ', 8:'大臀筋', 9:'大腿四頭筋', 10:'腹直筋',
-  11:'上腕筋', 12:'外腹斜筋', 13:'広背筋', 14:'ヒラメ筋', 15:'僧帽筋'
+  1:'上腕二頭筋',       // Biceps brachii
+  2:'三角筋(前部)',     // Anterior deltoid
+  3:'前鋸筋',           // Serratus anterior
+  4:'大胸筋',           // Pectoralis major
+  5:'上腕三頭筋',      // Triceps brachii
+  6:'腹直筋',           // Rectus abdominis
+  7:'ふくらはぎ',      // Gastrocnemius
+  8:'大臀筋',           // Gluteus maximus
+  9:'僧帽筋',           // Trapezius
+  10:'大腿四頭筋',     // Quadriceps femoris
+  11:'ハムストリングス', // Biceps femoris
+  12:'広背筋',          // Latissimus dorsi
+  13:'上腕筋',          // Brachialis
+  14:'外腹斜筋',       // Obliquus externus abdominis
+  15:'ヒラメ筋'        // Soleus
 };
 let muscleMap={...MUSCLES}; // APIから動的に上書きされる
 const EQUIP={1:'バーベル',2:'自重',3:'ダンベル',4:'マット',5:'懸垂バー',
