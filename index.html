@@ -227,9 +227,13 @@
 <script>
 /* ─── DATA MAPS ─── */
 const CATS={10:'腹筋・コア',8:'腕',12:'背中',14:'ふくらはぎ',11:'胸',9:'脚',13:'肩'};
-const MUSCLES={1:'上腕二頭筋',2:'前鋸筋',3:'上腕筋',4:'大胸筋',5:'上腕三頭筋',
-  6:'ふくらはぎ',7:'広背筋',8:'大臀筋',9:'内転筋',10:'腹直筋',
-  11:'大腿四頭筋',12:'ハムストリングス',13:'三角筋(前)',14:'三角筋(後)',15:'ヒラメ筋'};
+// Wger API の正式な筋肉ID対応表
+const MUSCLES={
+  1:'上腕二頭筋', 2:'三角筋(前部)', 3:'前鋸筋', 4:'大胸筋', 5:'上腕三頭筋',
+  6:'ハムストリングス', 7:'ふくらはぎ', 8:'大臀筋', 9:'大腿四頭筋', 10:'腹直筋',
+  11:'上腕筋', 12:'外腹斜筋', 13:'広背筋', 14:'ヒラメ筋', 15:'僧帽筋'
+};
+let muscleMap={...MUSCLES}; // APIから動的に上書きされる
 const EQUIP={1:'バーベル',2:'自重',3:'ダンベル',4:'マット',5:'懸垂バー',
   6:'ベンチ',7:'ケトルベル',8:'なし',9:'マシン',10:'EZバー',11:'ケーブル'};
 
@@ -278,7 +282,7 @@ function exName(ex){return tr(ex).name||'名称不明';}
 function exDesc(ex){return short(tr(ex).description||'');}
 function exMuscles(ex){
   return[...(ex.muscles||[]),...(ex.muscles_secondary||[])]
-    .map(m=>MUSCLES[m.id]||m.name_en).filter(Boolean).slice(0,3);
+    .map(m=>muscleMap[m.id]||m.name_en).filter(Boolean).slice(0,3);
 }
 function exEquip(ex){return(ex.equipment||[]).map(e=>EQUIP[e.id]).filter(Boolean)[0]||'器具なし';}
 function exCat(ex){return CATS[ex.category?.id]||'エクササイズ';}
@@ -590,7 +594,19 @@ function filterMuscles(){
   renderGrid(list,'muscleContainer','muscleCount');
 }
 
-/* ─── INIT ─── */
+/* ─── INIT: APIから筋肉名を取得してmuscleMapを上書き ─── */
+async function loadMuscleMap(){
+  try{
+    const r=await fetch('https://wger.de/api/v2/muscle/?format=json&limit=50');
+    if(!r.ok)return;
+    const d=await r.json();
+    (d.results||[]).forEach(m=>{
+      const ja=m.name_en; // 英語名をフォールバックに
+      muscleMap[m.id]=MUSCLES[m.id]||ja||muscleMap[m.id];
+    });
+  }catch{}
+}
+
 window.addEventListener('hashchange',()=>{
   const page=window.location.hash.replace('#/','').split('/')[0]||'home';
   if(page!==currentPage){currentPage=page;updateNav(page);renderPage(page);}
@@ -599,6 +615,7 @@ window.addEventListener('hashchange',()=>{
 const initPage=window.location.hash.replace('#/','').split('/')[0]||'home';
 currentPage=initPage;
 updateNav(initPage);
+loadMuscleMap();
 renderPage(initPage);
 </script>
 </body>
